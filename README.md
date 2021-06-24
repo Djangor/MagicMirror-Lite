@@ -1,5 +1,8 @@
 # MagicMirror-Lite
 
+This project is just to display Crypto and Fiat exchange Rates on a tiny raspberry pi powered display.
+MagicMirror is an overkill for this project, but it's based on the idea of it.
+
 ## Config
 
 
