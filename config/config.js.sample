@@ -1,0 +1,12 @@
+const config = {
+    dataCacheSettings: {
+        coinMarketCapAPIKey: '123',
+        coinsToShow: ['BTX', 'ETH'],
+        coinRefreshRate: 3600000,
+        fixerAPIKey: '123',
+        currenciesToShow: ['THB', 'CHF', 'USD'],
+        currencyRefreshRate: 3600000
+    },
+    port: 3005
+}
+module.exports = config;
