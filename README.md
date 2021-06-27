@@ -3,6 +3,9 @@
 This project is just to display Crypto and Fiat exchange Rates on a tiny raspberry pi powered display.
 MagicMirror is an overkill for this project, but it's based on the idea of it.
 
+<img width="692" alt="Screen Shot 2021-06-27 at 13 51 32" src="https://user-images.githubusercontent.com/6556194/123535581-ef786d80-d74e-11eb-8e68-be178c131795.png">
+
+
 ## Config
 
 
