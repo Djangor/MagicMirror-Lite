@@ -39,7 +39,11 @@ block content
     }
 
     const formatRate = (rate) => {
-      return rate < 0.01 ? rate.toString().substr(0, rate.toString().search(/[1-9]/) + 2) : rate.toFixed(3);
+      if (rate) {
+        return rate < 0.01 ? rate.toString().substr(0, rate.toString().search(/[1-9]/) + 2) : rate.toFixed(3);
+      } else {
+        return '-';
+      }
     }
 
     const loadGraph = () => {
@@ -89,7 +93,7 @@ block content
       $.get('loadCurrencies', {}, (data)  => {
         let currencies = '';
         for (let i = 0; i < data.rates.length; i++) {
-          currencies = currencies + '<tr><td class="symbol">' + data.rates[i].currency + '</td><td class="price">' + formatRate(data.rates[i].rate) + '</td></tr>';
+          currencies = currencies + '<tr><td class="symbol">' + data.rates[i].symbol + '</td><td class="price">' + formatRate(data.rates[i].rate) + '</td></tr>';
         }
         $('#currencyBody').html(currencies);
         $('#lastUpdatedCurr').text('Last Update: ' + data.lastUpdate);
