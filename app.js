@@ -8,6 +8,8 @@ const indexRouter = require('./routes/index');
 const coinRouter = require('./routes/loadCoins');
 const fiatRouter = require('./routes/loadCurrencies');
 const assetHistory = require('./routes/getAssetHistory');
+const symbolHistory = require('./routes/getSymbolHistory');
+
 const app = express();
 
 
@@ -28,6 +30,7 @@ app.use('/', indexRouter);
 app.use('/loadCoins', coinRouter);
 app.use('/loadCurrencies', fiatRouter);
 app.use('/getAssetHistory', assetHistory);
+app.use('/getSymbolHistory', symbolHistory);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

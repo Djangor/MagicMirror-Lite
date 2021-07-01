@@ -82,3 +82,27 @@ module.exports.getAssetHistory = function(limit) {
         })
     })
 }
+
+module.exports.getCoinHistory = function(symbol, limit) {
+    return new Promise((resolve, reject) => {
+        db.all("SELECT price, timestamp FROM coinPrices WHERE symbol ='" + symbol + "' ORDER BY TIMESTAMP desc LIMIT " + limit, [], (err, rows) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows);
+            }
+        })
+    })
+}
+
+module.exports.getCurrencyHistory = function(symbol, limit) {
+    return new Promise((resolve, reject) => {
+        db.all("SELECT rate, timestamp FROM exchangeRates WHERE symbol ='" + symbol + "' ORDER BY TIMESTAMP desc LIMIT " + limit, [], (err, rows) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows);
+            }
+        })
+    })
+}

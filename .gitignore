@@ -106,6 +106,9 @@ dist
 #actual config file
 config/config.js
 
+#actual db
+db/database.sqlite
+
 #OSX
 .DS_Store
 

@@ -1,6 +1,14 @@
 extends layout
 
 block content
+  div(class="modal fade" id="chartModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
+    div(class="modal-dialog" role="document")
+      div(class="modal-content" style="background-color:#000000")
+        div(class="modal-header")
+          h5(class="modal-title" id="chartModalTitle")
+        div(class="modal-body")
+          canvas(id="lineChart")
+          span(id="chartModalFooter" class="lastUpdate")
   div(class='table mml' id='currencyDiv')
     table
       thead
@@ -23,8 +31,6 @@ block content
       tbody(id='coinBody')
     span(id='lastUpdatedCoin' class='lastUpdate')
 
-  div(class="col-md-5")
-
 
 
 
@@ -46,45 +52,73 @@ block content
       }
     }
 
-    const loadGraph = () => {
-      $.get('getAssetHistory', {}, (data) => {
-        const ctxL = document.getElementById("lineChart").getContext('2d');
-        const myLineChart = new Chart(ctxL, {
-          type: 'line',
-          data: {
-            labels: data.labels,
-            datasets: [{
-              data: data.data,
-              borderColor: ['rgba(200, 99, 132, .7)',],
-              borderWidth: 2
-            }]
-          },
-          options: {
-            responsive: true,
-            legend: {display: false},
-            scales: {
-              xAxes: [{ticks: {display: false}}],
-              yAxes: [{ticks: {display: false}}]
-            }
+    const formatTable = (data, symbol) => {
+      const lowestVal = Math.min(...data.data);
+      const highestVal = Math.max(...data.data);
+      const firstDate = data.labels[0];
+      const lastDate = data.labels[data.labels.length -1];
+      let graphCol = '#0f5132';
+      if (data.data[0] > data.data[data.data.length -1]) {
+        graphCol = '#842029';
+      }
+      const ctxL = document.getElementById("lineChart").getContext('2d');
+      $('#chartModalTitle').text(symbol + ' Graph (low: ' + formatRate(lowestVal) + ' / high: ' + formatRate(highestVal) + ')');
+      $('#chartModalFooter').text('date from: ' + firstDate + ' / until: ' + lastDate);
+      const myLineChart = new Chart(ctxL, {
+        type: 'line',
+        data: {
+          labels: data.labels,
+          datasets: [{
+            data: data.data,
+            borderColor: [graphCol],
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          legend: {display: false},
+          scales: {
+            xAxes: [{ticks: {display: false}}],
           }
-        });
+        }
       });
+    }
+
+    const loadAssetHistory = () => {
+      $.get('getAssetHistory', {entries: 20}, (data) => {
+        formatTable(data, 'Asset');
+      });
+    }
+
+    const loadSymbolHistory = (symbol, isCoin) => {
+      $.get('getSymbolHistory', {symbol: symbol, isCoin: isCoin, entries: 20}, (data) => {
+        formatTable(data, symbol);
+      });
+    }
+
+    const showHistory = (symbol, isCoin) => {
+      $('#chartModal').modal({show: true});
+      loadSymbolHistory(symbol, isCoin);
+    }
+
+    const showAsset = () => {
+      $('#chartModal').modal({show:true});
+      loadAssetHistory();
     }
 
     const loadCoins = () =>  {
       $.get('loadCoins', {}, (data)  => {
         let coins = '';
         for (let i=0;i<data.rates.length;i++) {
-          coins = coins + '<tr><td class="symbol">' + data.rates[i].symbol + '</td><td class="price">' + formatRate(data.rates[i].price) + '</td>';
+          coins = coins + '<tr onclick="showHistory(\'' + data.rates[i].symbol + '\', true)"><td class="symbol">' + data.rates[i].symbol + '</td><td class="price">' + formatRate(data.rates[i].price) + '</td>';
           coins = coins + '<td class="asset">' + formatRate(data.rates[i].assetValue) + '</td>';
           const hour = data.rates[i].change1h > 0 ? 'up' : 'down';
           const day = data.rates[i].change24h > 0 ? 'up' : 'down';
           const days = data.rates[i].change7d > 0 ? 'up' : 'down';
           coins = coins + getArrow(hour) + getArrow(day) + getArrow(days);
         }
-        coins = coins + '<tr><td class="assetTotal"><b>TOTAL: </b></td><td>&nbsp;</td><td class="asset"><b>' + formatRate(data.asset ? data.asset : 0) + '</b></td><td colspan="3" class="chartCell"><canvas id="lineChart"></canvas></td></tr>';
+        coins = coins + '<tr onclick="showAsset()"><td class="assetTotal"><b>TOTAL: </b></td><td>&nbsp;</td><td class="asset"><b>' + formatRate(data.asset ? data.asset : 0) + '</b></td><td colspan="3" class="chartCell">&nbsp;</td></tr>';
         $('#coinBody').html(coins);
-        loadGraph();
         $('#lastUpdatedCoin').text('Last Update: ' + data.lastUpdate);
       })
     }
@@ -93,7 +127,7 @@ block content
       $.get('loadCurrencies', {}, (data)  => {
         let currencies = '';
         for (let i = 0; i < data.rates.length; i++) {
-          currencies = currencies + '<tr><td class="symbol">' + data.rates[i].symbol + '</td><td class="price">' + formatRate(data.rates[i].rate) + '</td></tr>';
+          currencies = currencies + '<tr onclick="showHistory(\'' + data.rates[i].symbol + '\', false)"><td class="symbol">' + data.rates[i].symbol + '</td><td class="price">' + formatRate(data.rates[i].rate) + '</td></tr>';
         }
         $('#currencyBody').html(currencies);
         $('#lastUpdatedCurr').text('Last Update: ' + data.lastUpdate);
