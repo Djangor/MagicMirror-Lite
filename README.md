@@ -33,3 +33,9 @@ Here is an example of an entry in `config.js`
     port: 3005
 }
 ```
+
+## Setup
+
+run npm install
+rename db/database_empty.sqlite -> db/database.sqlite
+(install script not yet done, will follow)
