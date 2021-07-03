@@ -22,9 +22,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/mdbootstrap/css', express.static(path.join(__dirname, 'node_modules/mdbootstrap/css')));
-app.use('/mdbootstrap/img', express.static(path.join(__dirname, 'node_modules/mdbootstrap/img')));
-app.use('/mdbootstrap/js', express.static(path.join(__dirname, 'node_modules/mdbootstrap/js')));
+app.use('/chartjs', express.static(path.join(__dirname, 'node_modules/chart.js/dist/')));
+app.use('/jquery', express.static(path.join(__dirname, 'node_modules/jquery/dist/')));
+app.use('/bootstrap', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/')))
 
 app.use('/', indexRouter);
 app.use('/loadCoins', coinRouter);

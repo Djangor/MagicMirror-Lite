@@ -13,14 +13,8 @@ module.exports.getAssetHistory = async function(entries) {
     return new Promise((resolve, reject) => {
         persistence.getAssetHistory(entries)
             .then((rows) => {
-                const labels = [];
-                const data = [];
                 rows = rows.reverse();
-                for(let i=0;i<rows.length;i++) {
-                    labels.push(rows[i].timestamp);
-                    data.push(rows[i].assetValue);
-                }
-                resolve({labels: labels, data: data});
+                resolve({labels: rows.map(row => row.timestamp), data: rows.map(row => row.assetValue)});
             })
             .catch((err) => {
                 console.log(err);
@@ -33,14 +27,16 @@ module.exports.getSymbolHistory = async function(symbol, isCoin, entries) {
         if (isCoin === 'true') {
             persistence.getCoinHistory(symbol,entries)
                 .then((rows) => {
-                    const labels = [];
-                    const data = [];
-                    rows = rows.reverse();
-                    for (let i = 0; i < rows.length; i++) {
-                        labels.push(rows[i].timestamp);
-                        data.push(rows[i].price);
+                    if (entries === 'curr') {
+                        rows = rows.reverse();
+                        resolve({labels: rows.map(row => row.timestamp), data: rows.map(row => row.price)});
+                    } else {
+                        rows = rows.reverse();
+                        resolve({labels: rows.map(row => row.date + ' ' + row.hour),
+                            dataMin: rows.map(row => row.min),
+                            dataMax: rows.map(row => row.max),
+                            dataAvg: rows.map(row => row.avg)});
                     }
-                    resolve({labels: labels, data: data});
                 })
                 .catch((err) => {
                     console.log(err);
@@ -48,14 +44,16 @@ module.exports.getSymbolHistory = async function(symbol, isCoin, entries) {
         } else {
             persistence.getCurrencyHistory(symbol,entries)
                 .then((rows) => {
-                    const labels = [];
-                    const data = [];
-                    rows = rows.reverse();
-                    for (let i = 0; i < rows.length; i++) {
-                        labels.push(rows[i].timestamp);
-                        data.push(rows[i].rate);
+                    if (entries === 'curr') {
+                        rows = rows.reverse();
+                        resolve({labels: rows.map(row => row.timestamp), data: rows.map(row => row.rate)});
+                    } else {
+                        rows = rows.reverse();
+                        resolve({labels: rows.map(row => row.date + ' ' + row.hour),
+                            dataMin: rows.map(row => row.min),
+                            dataMax: rows.map(row => row.max),
+                            dataAvg: rows.map(row => row.avg)});
                     }
-                    resolve({labels: labels, data: data});
                 })
                 .catch((err) => {
                     console.log(err);
@@ -155,4 +153,10 @@ console.log('---starting scheduler for coins with: ' + config.APISettings.coinRe
 const schedulerUpdateCoins = scheduler.scheduleJob(config.APISettings.coinRefreshRate, function(){
     console.log('running update for coins');
     updateCoins();
+});
+const aggregateScheduler = '0 0 1 * * *';
+console.log('---starting scheduler for aggregation with: ' + aggregateScheduler);
+const schedulerAggregate = scheduler.scheduleJob(aggregateScheduler, function(){
+    console.log('running aggregateScheduler');
+    persistence.aggregateDay();
 });
