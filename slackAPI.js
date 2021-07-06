@@ -3,7 +3,7 @@ const https = require('https');
 
 
 module.exports.sendSlackNotification = function(text) {
-    const data = {text: text};
+    const data = JSON.stringify({text: text});
     const options = {
         hostname: 'https://hooks.slack.com',
         port: 443,
