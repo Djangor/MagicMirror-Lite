@@ -4,7 +4,7 @@ const config = require('./config/config');
 const moment = require('moment');
 const scheduler = require('node-schedule');
 const persistence = require('./persistenceLayer');
-
+const slack = require('./slackAPI');
 module.exports.getCoins = function() {
     return persistence.getCurrentCoins();
 }
@@ -143,20 +143,20 @@ function updateCurrencies() {
     });
 }
 
-console.log('---starting scheduler for currencies with: ' + config.APISettings.currencyRefreshRate);
+slack.sendSlackNotification('starting scheduler for currencies with: ' + config.APISettings.currencyRefreshRate);
 const schedulerUpdateCurrencies = scheduler.scheduleJob(config.APISettings.currencyRefreshRate, function(){
-    console.log('running update for currencies');
+    slack.sendSlackNotification('running update for currencies');
     updateCurrencies();
 });
 
-console.log('---starting scheduler for coins with: ' + config.APISettings.coinRefreshRate);
+slack.sendSlackNotification('starting scheduler for coins with: ' + config.APISettings.coinRefreshRate);
 const schedulerUpdateCoins = scheduler.scheduleJob(config.APISettings.coinRefreshRate, function(){
-    console.log('running update for coins');
+    slack.sendSlackNotification('running update for coins');
     updateCoins();
 });
 const aggregateScheduler = '0 0 1 * * *';
-console.log('---starting scheduler for aggregation with: ' + aggregateScheduler);
+slack.sendSlackNotification('starting scheduler for aggregation with: ' + aggregateScheduler);
 const schedulerAggregate = scheduler.scheduleJob(aggregateScheduler, function(){
-    console.log('running aggregateScheduler');
+    slack.sendSlackNotification('running aggregateScheduler');
     persistence.aggregateDay();
 });
