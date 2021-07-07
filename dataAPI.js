@@ -145,18 +145,18 @@ function updateCurrencies() {
 
 slack.sendSlackNotification('starting scheduler for currencies with: ' + config.APISettings.currencyRefreshRate);
 const schedulerUpdateCurrencies = scheduler.scheduleJob(config.APISettings.currencyRefreshRate, function(){
-    slack.sendSlackNotification('running update for currencies');
+    console.log('running update for currencies');
     updateCurrencies();
 });
 
 slack.sendSlackNotification('starting scheduler for coins with: ' + config.APISettings.coinRefreshRate);
 const schedulerUpdateCoins = scheduler.scheduleJob(config.APISettings.coinRefreshRate, function(){
-    slack.sendSlackNotification('running update for coins');
+    console.log('running update for coins');
     updateCoins();
 });
 const aggregateScheduler = '0 0 1 * * *';
 slack.sendSlackNotification('starting scheduler for aggregation with: ' + aggregateScheduler);
 const schedulerAggregate = scheduler.scheduleJob(aggregateScheduler, function(){
-    slack.sendSlackNotification('running aggregateScheduler');
+    console.log('running aggregateScheduler');
     persistence.aggregateDay();
 });
