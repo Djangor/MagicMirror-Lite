@@ -1,4 +1,5 @@
 const moment = require('moment');
+const _ = require('lodash');
 const sqlite3 = require('sqlite3');
 let db = new sqlite3.Database('./db/database.sqlite');
 
@@ -25,8 +26,10 @@ module.exports.addToCoinHistory = function(coins) {
 }
 
 module.exports.addToCurrencyHistory = function(currencies) {
+    console.log('test ' + JSON.stringify(currencies));
     const currentTSD = moment().format('YYYY-MM-DD HH:mm:ss');
-    const rows = currencies.rates.map(currency => '("' + currency.currency + '", ' + currency.rate + ', "' + currentTSD + '")');
+    const rates = _.get(currencies, 'rates', []);
+    const rows = rates.map(currency => '("' + currency.currency + '", ' + currency.rate + ', "' + currentTSD + '")');
     const sql = 'INSERT INTO exchangeRates VALUES ' + rows.join(', ');
     console.log('inserting currencies: ' + sql);
     db.run(sql, function(err) {
